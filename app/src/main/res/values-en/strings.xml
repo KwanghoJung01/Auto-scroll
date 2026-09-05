@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Auto Scroll</string>
+    <string name="app_tagline">Swipes the screen for you, slowly, while a reward app is open.</string>
+
+    <string name="accessibility_label">Auto Scroll</string>
+    <string name="accessibility_description">Needs the accessibility gesture permission to swipe for you. It never reads or stores screen content.</string>
+    <string name="accessibility_summary">Scrolls automatically at the speed and for the time you set.</string>
+
+    <string name="section_permission">1. Set up</string>
+    <string name="permission_accessibility">Accessibility service</string>
+    <string name="permission_accessibility_hint">Settings → Accessibility → Installed apps → Auto Scroll.</string>
+    <string name="permission_overlay">Display over other apps</string>
+    <string name="permission_overlay_hint">Needed to float a small control bar over the reward app.</string>
+    <string name="permission_granted">Granted</string>
+    <string name="permission_missing">Needed</string>
+
+    <string name="section_settings">2. Settings</string>
+    <string name="label_direction">Scroll direction</string>
+    <string name="direction_down">Down (through the feed)</string>
+    <string name="direction_up">Up</string>
+    <string name="label_speed">Speed — time for one swipe</string>
+    <string name="label_distance">Distance per swipe</string>
+    <string name="label_interval">Pause between swipes</string>
+    <string name="label_total">Total run time</string>
+    <string name="label_delay">Start delay</string>
+    <string name="label_random">Vary it like a human</string>
+    <string name="label_random_hint" formatted="false">Shifts distance and timing by up to ±20% each swipe.</string>
+
+    <string name="value_speed">%.1f s per swipe</string>
+    <string name="value_distance">%d%% of screen height</string>
+    <string name="value_total">%1$d min %2$d s</string>
+    <string name="value_interval">%.1f s pause</string>
+    <string name="value_unlimited">Unlimited (stop by hand)</string>
+    <string name="value_delay">Starts after %d s</string>
+
+    <string name="section_run">3. Run</string>
+    <string name="run_hint">Start closes this screen and floats the control bar. Open the reward app before the delay ends.</string>
+
+    <string name="action_start">Start</string>
+    <string name="action_stop">Stop</string>
+    <string name="action_grant">Grant</string>
+    <string name="action_open_settings">Open settings</string>
+    <string name="action_quit">Quit</string>
+    <string name="action_share">Share app link</string>
+    <string name="action_share_apk">Send the APK</string>
+    <string name="action_close">Close</string>
+    <string name="action_move">Move</string>
+
+    <string name="section_share">4. Share</string>
+    <string name="share_hint">Send it straight to a friend. They will need to allow installs from unknown sources.</string>
+    <string name="share_message">Auto Scroll — an app that slowly swipes the screen for you.\nhttps://github.com/KwanghoJung01/Auto-scroll</string>
+
+    <string name="state_idle">Idle</string>
+    <string name="state_countdown">in %d s</string>
+    <string name="state_running_unlimited">%d swipes</string>
+
+    <string name="notification_channel">Auto Scroll running</string>
+    <string name="notification_text">The control bar is up. Tap it to start or stop.</string>
+
+    <string name="toast_need_accessibility">Turn on \'Auto Scroll\' under Accessibility first.</string>
+    <string name="toast_need_overlay">Please allow \'Display over other apps\'.</string>
+    <string name="toast_started">Starting in %d s. Open the reward app now.</string>
+    <string name="toast_settings_failed">Could not open the settings screen.</string>
+    <string name="toast_share_failed">Could not prepare the install file.</string>
+</resources>

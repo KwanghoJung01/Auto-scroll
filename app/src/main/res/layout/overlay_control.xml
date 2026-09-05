@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/overlay_background"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingStart="4dp"
+    android:paddingEnd="4dp">
+
+    <ImageView
+        android:id="@+id/overlay_handle"
+        android:layout_width="28dp"
+        android:layout_height="40dp"
+        android:contentDescription="@string/action_move"
+        android:padding="4dp"
+        android:src="@drawable/ic_drag"
+        android:alpha="0.6" />
+
+    <TextView
+        android:id="@+id/overlay_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="46dp"
+        android:gravity="center"
+        android:textColor="@color/overlay_text"
+        android:textSize="14sp"
+        android:textStyle="bold" />
+
+    <ImageButton
+        android:id="@+id/overlay_toggle"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:background="?android:attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/action_start"
+        android:src="@drawable/ic_play" />
+
+    <ImageButton
+        android:id="@+id/overlay_close"
+        android:layout_width="36dp"
+        android:layout_height="44dp"
+        android:background="?android:attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/action_close"
+        android:alpha="0.7"
+        android:src="@drawable/ic_close" />
+</LinearLayout>

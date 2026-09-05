@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">자동 스크롤</string>
+    <string name="app_tagline">보상 앱을 보는 동안 손가락 대신 화면을 천천히 쓸어내립니다.</string>
+
+    <string name="accessibility_label">자동 스크롤</string>
+    <string name="accessibility_description">화면을 대신 쓸어내리기 위해 접근성 제스처 권한이 필요합니다. 화면 내용을 읽거나 저장하지 않습니다.</string>
+    <string name="accessibility_summary">설정한 속도와 시간에 맞춰 자동으로 스크롤합니다.</string>
+
+    <string name="section_permission">1. 준비하기</string>
+    <string name="permission_accessibility">접근성 서비스</string>
+    <string name="permission_accessibility_hint">설정 → 접근성 → 설치된 앱 → 자동 스크롤 을 켜주세요.</string>
+    <string name="permission_overlay">다른 앱 위에 표시</string>
+    <string name="permission_overlay_hint">보상 앱 위에 작은 조작 바를 띄우기 위해 필요합니다.</string>
+    <string name="permission_granted">허용됨</string>
+    <string name="permission_missing">허용 필요</string>
+
+    <string name="section_settings">2. 설정하기</string>
+    <string name="label_direction">스크롤 방향</string>
+    <string name="direction_down">아래로 (피드 넘기기)</string>
+    <string name="direction_up">위로</string>
+    <string name="label_speed">속도 — 한 번 쓸어내리는 시간</string>
+    <string name="label_distance">한 번에 넘기는 거리</string>
+    <string name="label_interval">쉬는 시간 — 다음 동작까지</string>
+    <string name="label_total">전체 실행 시간</string>
+    <string name="label_delay">시작 준비 시간</string>
+    <string name="label_random">사람처럼 불규칙하게</string>
+    <string name="label_random_hint" formatted="false">거리와 시간을 매번 ±20% 안에서 다르게 합니다.</string>
+
+    <string name="value_speed">%.1f초에 걸쳐 천천히</string>
+    <string name="value_distance">화면 높이의 %d%%</string>
+    <string name="value_interval">%.1f초 쉬기</string>
+    <string name="value_total">%1$d분 %2$d초</string>
+    <string name="value_unlimited">무제한 (직접 정지)</string>
+    <string name="value_delay">%d초 뒤 시작</string>
+
+    <string name="section_run">3. 실행하기</string>
+    <string name="run_hint">시작을 누르면 이 화면이 닫히고 조작 바가 뜹니다. 준비 시간 안에 보상 앱을 열어두세요.</string>
+
+    <string name="action_start">시작</string>
+    <string name="action_stop">정지</string>
+    <string name="action_grant">권한 주기</string>
+    <string name="action_open_settings">설정 열기</string>
+    <string name="action_quit">종료</string>
+    <string name="action_share">앱 링크 공유</string>
+    <string name="action_share_apk">설치 파일(APK) 보내기</string>
+    <string name="action_close">닫기</string>
+    <string name="action_move">옮기기</string>
+
+    <string name="section_share">4. 나눠주기</string>
+    <string name="share_hint">친구에게 그대로 보낼 수 있습니다. 받는 쪽은 \"출처를 알 수 없는 앱 설치\"를 허용해야 합니다.</string>
+    <string name="share_message">자동 스크롤 — 화면을 대신 천천히 쓸어내려 주는 앱입니다.\nhttps://github.com/KwanghoJung01/Auto-scroll</string>
+
+    <string name="state_idle">대기</string>
+    <string name="state_countdown">%d초 뒤</string>
+    <string name="state_running_unlimited">%d회</string>
+
+    <string name="notification_channel">자동 스크롤 실행 중</string>
+    <string name="notification_text">조작 바가 떠 있습니다. 눌러서 시작하거나 멈추세요.</string>
+
+    <string name="toast_need_accessibility">먼저 접근성에서 \'자동 스크롤\'을 켜주세요.</string>
+    <string name="toast_need_overlay">\'다른 앱 위에 표시\' 권한을 허용해주세요.</string>
+    <string name="toast_started">%d초 뒤에 시작합니다. 보상 앱을 열어주세요.</string>
+    <string name="toast_settings_failed">설정 화면을 열 수 없습니다.</string>
+    <string name="toast_share_failed">설치 파일을 준비하지 못했습니다.</string>
+</resources>

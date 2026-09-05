@@ -1,0 +1,1 @@
+-keep class com.jace.autoscroll.AutoScrollService { *; }
