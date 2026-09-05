@@ -239,7 +239,8 @@ class MainActivity : AppCompatActivity() {
             .setType("application/vnd.android.package-archive")
             .putExtra(Intent.EXTRA_STREAM, uri)
             .putExtra(Intent.EXTRA_TEXT, getString(R.string.share_message))
+        val chooser = Intent.createChooser(intent, getString(R.string.action_share_apk))
             .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        startActivity(Intent.createChooser(intent, getString(R.string.action_share_apk)))
+        startActivity(chooser)
     }
 }
