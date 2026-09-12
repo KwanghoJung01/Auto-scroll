@@ -26,6 +26,24 @@
             android:text="@string/app_tagline"
             android:textAppearance="?attr/textAppearanceBodyMedium" />
 
+        <!-- 시작 버튼은 바로 누를 수 있도록 맨 위에 둔다. -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/startButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp"
+            android:text="@string/action_start"
+            android:textSize="18sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:text="@string/run_hint"
+            android:textAppearance="?attr/textAppearanceBodySmall" />
+
         <!-- 1. 권한 -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
@@ -201,7 +219,7 @@
                     android:layout_height="wrap_content"
                     android:stepSize="100"
                     android:valueFrom="200"
-                    android:valueTo="3000" />
+                    android:valueTo="10000" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -302,23 +320,74 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- 3. 실행 -->
-        <TextView
+        <!-- 3. 가로 기준선 -->
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="@string/run_hint"
-            android:textAppearance="?attr/textAppearanceBodySmall" />
+            android:layout_marginTop="16dp"
+            app:cardCornerRadius="16dp">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/startButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:paddingTop="14dp"
-            android:paddingBottom="14dp"
-            android:text="@string/action_start"
-            android:textSize="17sp" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/section_guide"
+                    android:textAppearance="?attr/textAppearanceTitleMedium" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="@string/guide_description"
+                    android:textAppearance="?attr/textAppearanceBodySmall" />
+
+                <com.google.android.material.button.MaterialButtonToggleGroup
+                    android:id="@+id/guideToggle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    app:selectionRequired="true"
+                    app:singleSelection="true">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/guideNone"
+                        style="@style/Widget.Material3.Button.OutlinedButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/guide_none" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/guideOne"
+                        style="@style/Widget.Material3.Button.OutlinedButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/guide_one" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/guideTwo"
+                        style="@style/Widget.Material3.Button.OutlinedButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/guide_two" />
+                </com.google.android.material.button.MaterialButtonToggleGroup>
+
+                <TextView
+                    android:id="@+id/guideHint"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/guide_hint_off"
+                    android:textAppearance="?attr/textAppearanceBodySmall" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
         <!-- 4. 공유 -->
         <TextView

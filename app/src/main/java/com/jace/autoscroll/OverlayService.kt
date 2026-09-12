@@ -35,15 +35,29 @@ class OverlayService : Service() {
         const val ACTION_STOP = "com.jace.autoscroll.STOP"
         /** 조작 바를 띄우면서 곧바로 자동 스크롤을 시작한다. */
         const val ACTION_START_SCROLL = "com.jace.autoscroll.START_SCROLL"
+        /** 설정 화면에서 가로줄 설정을 바꿨을 때 다시 그리게 한다. */
+        const val ACTION_REFRESH_GUIDES = "com.jace.autoscroll.REFRESH_GUIDES"
 
         private const val CHANNEL_ID = "auto_scroll_overlay"
         private const val NOTIFICATION_ID = 1001
+
+        /** 조작 바가 떠 있는지. 설정 화면에서 갱신을 보낼지 판단하는 데 쓴다. */
+        @Volatile
+        var isRunning: Boolean = false
+            private set
 
         fun show(context: Context, startImmediately: Boolean) {
             val intent = Intent(context, OverlayService::class.java).setAction(
                 if (startImmediately) ACTION_START_SCROLL else ACTION_SHOW
             )
             context.startForegroundService(intent)
+        }
+
+        fun refreshGuides(context: Context) {
+            if (!isRunning) return
+            context.startForegroundService(
+                Intent(context, OverlayService::class.java).setAction(ACTION_REFRESH_GUIDES)
+            )
         }
 
         fun stop(context: Context) {
@@ -59,6 +73,8 @@ class OverlayService : Service() {
 
     private var statusText: TextView? = null
     private var toggleButton: ImageButton? = null
+    private var guideButton: ImageButton? = null
+    private var guides: GuideLineOverlay? = null
 
     private val listener: (ScrollStatus) -> Unit = { render(it) }
 
@@ -66,8 +82,10 @@ class OverlayService : Service() {
 
     override fun onCreate() {
         super.onCreate()
+        isRunning = true
         startInForeground()
         addOverlay()
+        addGuides()
         ScrollController.addListener(listener)
     }
 
@@ -79,11 +97,15 @@ class OverlayService : Service() {
                 return START_NOT_STICKY
             }
             ACTION_START_SCROLL -> ScrollController.start(this)
+            ACTION_REFRESH_GUIDES -> renderGuides()
         }
         return START_STICKY
     }
 
     override fun onDestroy() {
+        isRunning = false
+        guides?.clear()
+        guides = null
         ScrollController.removeListener(listener)
         ScrollController.stop()
         overlay?.let { runCatching { windowManager?.removeView(it) } }
@@ -162,7 +184,7 @@ class OverlayService : Service() {
             // 스와이프 경로(화면 가운데)와 겹치지 않도록 오른쪽 위에 둔다.
             gravity = Gravity.TOP or Gravity.START
             val metrics = resources.displayMetrics
-            x = metrics.widthPixels - (170 * metrics.density).toInt()
+            x = metrics.widthPixels - (210 * metrics.density).toInt()
             y = (metrics.heightPixels * 0.06f).toInt()
         }
 
@@ -173,6 +195,8 @@ class OverlayService : Service() {
             }
             ScrollController.toggle(this)
         }
+        guideButton = view.findViewById(R.id.overlay_guide)
+        guideButton?.setOnClickListener { toggleGuides() }
         view.findViewById<View>(R.id.overlay_close).setOnClickListener { stopSelf() }
 
         view.findViewById<View>(R.id.overlay_handle).setOnTouchListener(DragListener())
@@ -217,6 +241,40 @@ class OverlayService : Service() {
             }
             return false
         }
+    }
+
+    // ------------------------------------------------------------- 가로 기준선
+
+    private fun addGuides() {
+        if (guides != null) return
+        guides = GuideLineOverlay(this).apply {
+            onMoved = { index, percent -> Prefs.saveGuidePosition(this@OverlayService, index, percent) }
+        }
+        renderGuides()
+    }
+
+    private fun renderGuides() {
+        val config = Prefs.load(this)
+        guides?.show(config.visibleGuides())
+        guideButton?.setImageResource(
+            if (config.guidesVisible && config.guideLineCount > 0) {
+                R.drawable.ic_guide
+            } else {
+                R.drawable.ic_guide_off
+            }
+        )
+        guideButton?.alpha = if (config.guideLineCount > 0) 1f else 0.4f
+    }
+
+    /** 조작 바의 줄 버튼: 줄이 없으면 한 줄부터 켜고, 있으면 보였다 감췄다 한다. */
+    private fun toggleGuides() {
+        val config = Prefs.load(this)
+        if (config.guideLineCount == 0) {
+            Prefs.save(this, config.copy(guideLineCount = 1, guidesVisible = true))
+        } else {
+            Prefs.saveGuidesVisible(this, !config.guidesVisible)
+        }
+        renderGuides()
     }
 
     private fun render(status: ScrollStatus) {

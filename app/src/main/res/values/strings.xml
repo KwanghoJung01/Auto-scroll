@@ -19,7 +19,7 @@
     <string name="label_direction">스크롤 방향</string>
     <string name="direction_down">아래로 (피드 넘기기)</string>
     <string name="direction_up">위로</string>
-    <string name="label_speed">속도 — 한 번 쓸어내리는 시간</string>
+    <string name="label_speed">속도 — 한 번 쓸어내리는 시간 (길수록 천천히)</string>
     <string name="label_distance">한 번에 넘기는 거리</string>
     <string name="label_interval">쉬는 시간 — 다음 동작까지</string>
     <string name="label_total">전체 실행 시간</string>
@@ -34,8 +34,7 @@
     <string name="value_unlimited">무제한 (직접 정지)</string>
     <string name="value_delay">%d초 뒤 시작</string>
 
-    <string name="section_run">3. 실행하기</string>
-    <string name="run_hint">시작을 누르면 이 화면이 닫히고 조작 바가 뜹니다. 준비 시간 안에 보상 앱을 열어두세요.</string>
+    <string name="run_hint">누르면 이 화면이 닫히고 조작 바가 뜹니다. 준비 시간 안에 보상 앱을 열어두세요.</string>
 
     <string name="action_start">시작</string>
     <string name="action_stop">정지</string>
@@ -63,4 +62,14 @@
     <string name="toast_started">%d초 뒤에 시작합니다. 보상 앱을 열어주세요.</string>
     <string name="toast_settings_failed">설정 화면을 열 수 없습니다.</string>
     <string name="toast_share_failed">설치 파일을 준비하지 못했습니다.</string>
+
+    <string name="section_guide">3. 가로 기준선</string>
+    <string name="guide_description">화면을 가로지르는 줄을 띄워, 스크롤이 올라가는 동안에도 보던 자리를 놓치지 않게 합니다.</string>
+    <string name="guide_none">없음</string>
+    <string name="guide_one">한 줄</string>
+    <string name="guide_two">두 줄</string>
+    <string name="guide_hint_off">줄을 켜면 조작 바가 떠 있는 동안 화면에 나타납니다.</string>
+    <string name="guide_hint_on">줄 오른쪽 끝의 둥근 손잡이를 위아래로 끌어 위치를 맞추세요. 조작 바의 줄 버튼으로 잠깐 감출 수 있습니다.</string>
+    <string name="guide_handle_description">기준선 위치 옮기기</string>
+    <string name="action_guide">가로 기준선 켜고 끄기</string>
 </resources>

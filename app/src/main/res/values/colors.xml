@@ -5,4 +5,5 @@
     <color name="overlay_background">#E6101418</color>
     <color name="overlay_text">#FFFFFF</color>
     <color name="icon_background">#12233F</color>
+    <color name="guide_line">#FFC400</color>
 </resources>

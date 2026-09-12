@@ -64,6 +64,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        syncGuideSelection()
         refreshPermissionState()
         ScrollController.addListener(statusListener)
     }
@@ -79,6 +80,13 @@ class MainActivity : AppCompatActivity() {
         directionToggle.check(
             if (config.direction == ScrollDirection.UP) R.id.directionUp else R.id.directionDown
         )
+        guideToggle.check(
+            when (config.guideLineCount) {
+                1 -> R.id.guideOne
+                2 -> R.id.guideTwo
+                else -> R.id.guideNone
+            }
+        )
         speedSlider.value = config.swipeDurationMs.toFloat()
         distanceSlider.value = config.distancePercent.toFloat()
         intervalSlider.value = config.intervalMs.toFloat()
@@ -89,6 +97,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun currentConfig(): ScrollConfig = with(binding) {
+        // 가로줄 위치는 조작 바에서 끌어 옮기며 바뀌므로 저장된 값을 그대로 물려준다.
+        val saved = Prefs.load(this@MainActivity)
         ScrollConfig(
             direction = if (directionToggle.checkedButtonId == R.id.directionUp) {
                 ScrollDirection.UP
@@ -101,6 +111,14 @@ class MainActivity : AppCompatActivity() {
             totalSeconds = totalSlider.value.toInt(),
             startDelaySec = delaySlider.value.toInt(),
             randomize = randomSwitch.isChecked,
+            guideLineCount = when (guideToggle.checkedButtonId) {
+                R.id.guideOne -> 1
+                R.id.guideTwo -> 2
+                else -> 0
+            },
+            guidesVisible = saved.guidesVisible,
+            guide1Percent = saved.guide1Percent,
+            guide2Percent = saved.guide2Percent,
         )
     }
 
@@ -114,6 +132,12 @@ class MainActivity : AppCompatActivity() {
         randomSwitch.setOnCheckedChangeListener { _, _ -> onChange(Unit) }
         directionToggle.addOnButtonCheckedListener { _, _, isChecked ->
             if (isChecked) onChange(Unit)
+        }
+        guideToggle.addOnButtonCheckedListener { _, _, isChecked ->
+            if (isChecked) {
+                onChange(Unit)
+                OverlayService.refreshGuides(this@MainActivity)
+            }
         }
     }
 
@@ -133,6 +157,21 @@ class MainActivity : AppCompatActivity() {
             getString(R.string.value_total, config.totalSeconds / 60, config.totalSeconds % 60)
         }
         delayValue.text = getString(R.string.value_delay, config.startDelaySec)
+        guideHint.setText(
+            if (config.guideLineCount > 0) R.string.guide_hint_on else R.string.guide_hint_off
+        )
+    }
+
+    /** 조작 바에서 줄을 켜고 껐을 수 있으므로 돌아올 때 화면을 맞춰준다. */
+    private fun syncGuideSelection() {
+        val config = Prefs.load(this)
+        val id = when (config.guideLineCount) {
+            1 -> R.id.guideOne
+            2 -> R.id.guideTwo
+            else -> R.id.guideNone
+        }
+        if (binding.guideToggle.checkedButtonId != id) binding.guideToggle.check(id)
+        renderValues()
     }
 
     // ------------------------------------------------------------- 권한/시작

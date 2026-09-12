@@ -23,8 +23,20 @@ data class ScrollConfig(
     val totalSeconds: Int = 60,
     val startDelaySec: Int = 5,
     val randomize: Boolean = true,
+    val guideLineCount: Int = 0,
+    val guidesVisible: Boolean = true,
+    val guide1Percent: Int = 40,
+    val guide2Percent: Int = 60,
 ) {
     val isUnlimited: Boolean get() = totalSeconds <= 0
+
+    /** 화면에 실제로 그릴 가로줄들의 위치(화면 높이 대비 %). */
+    fun visibleGuides(): List<Int> = when {
+        !guidesVisible -> emptyList()
+        guideLineCount >= 2 -> listOf(guide1Percent, guide2Percent)
+        guideLineCount == 1 -> listOf(guide1Percent)
+        else -> emptyList()
+    }
 }
 
 object Prefs {
@@ -37,6 +49,10 @@ object Prefs {
     private const val KEY_TOTAL = "total_seconds"
     private const val KEY_DELAY = "start_delay"
     private const val KEY_RANDOM = "randomize"
+    private const val KEY_GUIDE_COUNT = "guide_count"
+    private const val KEY_GUIDES_VISIBLE = "guides_visible"
+    private const val KEY_GUIDE1 = "guide1_percent"
+    private const val KEY_GUIDE2 = "guide2_percent"
 
     fun load(context: Context): ScrollConfig {
         val p = context.getSharedPreferences(NAME, Context.MODE_PRIVATE)
@@ -53,6 +69,10 @@ object Prefs {
             totalSeconds = p.getInt(KEY_TOTAL, d.totalSeconds),
             startDelaySec = p.getInt(KEY_DELAY, d.startDelaySec),
             randomize = p.getBoolean(KEY_RANDOM, d.randomize),
+            guideLineCount = p.getInt(KEY_GUIDE_COUNT, d.guideLineCount),
+            guidesVisible = p.getBoolean(KEY_GUIDES_VISIBLE, d.guidesVisible),
+            guide1Percent = p.getInt(KEY_GUIDE1, d.guide1Percent),
+            guide2Percent = p.getInt(KEY_GUIDE2, d.guide2Percent),
         )
     }
 
@@ -65,6 +85,22 @@ object Prefs {
             .putInt(KEY_TOTAL, config.totalSeconds)
             .putInt(KEY_DELAY, config.startDelaySec)
             .putBoolean(KEY_RANDOM, config.randomize)
+            .putInt(KEY_GUIDE_COUNT, config.guideLineCount)
+            .putBoolean(KEY_GUIDES_VISIBLE, config.guidesVisible)
+            .putInt(KEY_GUIDE1, config.guide1Percent)
+            .putInt(KEY_GUIDE2, config.guide2Percent)
             .apply()
+    }
+
+    /** 가로줄을 끌어 옮겼을 때처럼, 한 값만 따로 저장한다. */
+    fun saveGuidePosition(context: Context, index: Int, percent: Int) {
+        val key = if (index == 0) KEY_GUIDE1 else KEY_GUIDE2
+        context.getSharedPreferences(NAME, Context.MODE_PRIVATE).edit()
+            .putInt(key, percent).apply()
+    }
+
+    fun saveGuidesVisible(context: Context, visible: Boolean) {
+        context.getSharedPreferences(NAME, Context.MODE_PRIVATE).edit()
+            .putBoolean(KEY_GUIDES_VISIBLE, visible).apply()
     }
 }

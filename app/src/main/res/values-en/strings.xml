@@ -19,7 +19,7 @@
     <string name="label_direction">Scroll direction</string>
     <string name="direction_down">Down (through the feed)</string>
     <string name="direction_up">Up</string>
-    <string name="label_speed">Speed — time for one swipe</string>
+    <string name="label_speed">Speed — time for one swipe (longer is slower)</string>
     <string name="label_distance">Distance per swipe</string>
     <string name="label_interval">Pause between swipes</string>
     <string name="label_total">Total run time</string>
@@ -34,8 +34,7 @@
     <string name="value_unlimited">Unlimited (stop by hand)</string>
     <string name="value_delay">Starts after %d s</string>
 
-    <string name="section_run">3. Run</string>
-    <string name="run_hint">Start closes this screen and floats the control bar. Open the reward app before the delay ends.</string>
+    <string name="run_hint">This closes the screen and floats the control bar. Open the reward app before the delay ends.</string>
 
     <string name="action_start">Start</string>
     <string name="action_stop">Stop</string>
@@ -63,4 +62,14 @@
     <string name="toast_started">Starting in %d s. Open the reward app now.</string>
     <string name="toast_settings_failed">Could not open the settings screen.</string>
     <string name="toast_share_failed">Could not prepare the install file.</string>
+
+    <string name="section_guide">3. Guide lines</string>
+    <string name="guide_description">Float a line across the screen so you keep track of where you were reading while it scrolls.</string>
+    <string name="guide_none">None</string>
+    <string name="guide_one">One</string>
+    <string name="guide_two">Two</string>
+    <string name="guide_hint_off">Turn a line on and it appears whenever the control bar is up.</string>
+    <string name="guide_hint_on">Drag the round handle at the right end to move a line. The line button on the control bar hides them for a moment.</string>
+    <string name="guide_handle_description">Move the guide line</string>
+    <string name="action_guide">Show or hide guide lines</string>
 </resources>
