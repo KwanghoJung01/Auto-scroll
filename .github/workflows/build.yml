@@ -52,6 +52,23 @@ jobs:
           files: out/*.apk
           generate_release_notes: true
 
+      # softprops 는 이미 있는 태그를 옮기지 않아서, 릴리스 페이지가 예전 커밋을
+      # 가리킨 채로 남는다. 먼저 태그를 이번 커밋으로 옮겨둔다.
+      - name: Move the latest tag to this commit
+        if: github.event_name == 'push' && !startsWith(github.ref, 'refs/tags/')
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const ref = 'tags/latest';
+            try {
+              await github.rest.git.updateRef({ ...context.repo, ref, sha: context.sha, force: true });
+            } catch (error) {
+              if (error.status !== 422 && error.status !== 404) throw error;
+              await github.rest.git.createRef({
+                ...context.repo, ref: `refs/${ref}`, sha: context.sha,
+              });
+            }
+
       # 평소 push: 폰에서 바로 받을 수 있도록 'latest' 릴리스를 갱신한다.
       - name: Update the latest release
         if: github.event_name == 'push' && !startsWith(github.ref, 'refs/tags/')
