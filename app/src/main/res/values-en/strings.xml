@@ -17,7 +17,7 @@
 
     <string name="section_settings">2. Settings</string>
     <string name="label_direction">Scroll direction</string>
-    <string name="direction_down">Down (through the feed)</string>
+    <string name="direction_down">Down</string>
     <string name="direction_up">Up</string>
     <string name="label_speed">Speed — time for one swipe (longer is slower)</string>
     <string name="label_distance">Distance per swipe</string>
@@ -72,4 +72,16 @@
     <string name="guide_hint_on">Drag the round handle at the right end to move a line. The line button on the control bar hides them for a moment.</string>
     <string name="guide_handle_description">Move the guide line</string>
     <string name="action_guide">Show or hide guide lines</string>
+
+    <string name="direction_bounce">Both</string>
+    <string name="bounce_description">Goes down for a while, then back up, over and over. Make the down leg longer than the up leg to drift gently downward while still going back and forth.</string>
+    <string name="label_down_seconds">Downward leg</string>
+    <string name="label_up_seconds">Upward leg</string>
+    <string name="value_leg">%d s</string>
+    <string name="value_cycle">One round is %1$d s — about %2$d rounds in the total time.</string>
+    <string name="value_cycle_partial">One round is %d s — the total time ends mid-round.</string>
+    <string name="value_cycle_unlimited">One round is %d s — repeats until you stop it.</string>
+    <string name="direction_state_bounce_down">Going back and forth, currently down</string>
+    <string name="direction_state_bounce_up">Going back and forth, currently up</string>
+    <string name="overlay_direction_description">Current scroll direction</string>
 </resources>

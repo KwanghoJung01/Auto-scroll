@@ -40,6 +40,8 @@ class AutoScrollService : AccessibilityService() {
     /**
      * 한 번 쓸어내린다.
      *
+     * @param direction 이번 스와이프가 향하는 쪽. [ScrollDirection.BOUNCE] 가 아니라
+     *   왕복 중이라면 지금 구간의 방향(DOWN/UP)을 넘겨야 한다.
      * @param distancePercent 화면 높이 대비 이동 거리(%)
      * @param durationMs 끄는 데 걸리는 시간. 길수록 천천히 움직인다.
      */
@@ -55,13 +57,13 @@ class AutoScrollService : AccessibilityService() {
         val margin = size.y * 0.12f
         val startY: Float
         val endY: Float
-        if (direction == ScrollDirection.DOWN) {
-            // 손가락을 위로 → 내용이 아래로 넘어간다.
-            startY = (size.y - margin).coerceAtMost(size.y * 0.88f)
-            endY = (startY - distance).coerceAtLeast(margin)
-        } else {
+        if (direction == ScrollDirection.UP) {
             startY = margin
             endY = (startY + distance).coerceAtMost(size.y - margin)
+        } else {
+            // 손가락을 위로 → 내용이 아래로 넘어간다. (왕복도 여기로 들어오지 않는다)
+            startY = (size.y - margin).coerceAtMost(size.y * 0.88f)
+            endY = (startY - distance).coerceAtLeast(margin)
         }
         if (kotlin.math.abs(endY - startY) < 10f) return false
 

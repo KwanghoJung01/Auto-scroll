@@ -17,7 +17,7 @@
 
     <string name="section_settings">2. 설정하기</string>
     <string name="label_direction">스크롤 방향</string>
-    <string name="direction_down">아래로 (피드 넘기기)</string>
+    <string name="direction_down">아래로</string>
     <string name="direction_up">위로</string>
     <string name="label_speed">속도 — 한 번 쓸어내리는 시간 (길수록 천천히)</string>
     <string name="label_distance">한 번에 넘기는 거리</string>
@@ -72,4 +72,16 @@
     <string name="guide_hint_on">줄 오른쪽 끝의 둥근 손잡이를 위아래로 끌어 위치를 맞추세요. 조작 바의 줄 버튼으로 잠깐 감출 수 있습니다.</string>
     <string name="guide_handle_description">기준선 위치 옮기기</string>
     <string name="action_guide">가로 기준선 켜고 끄기</string>
+
+    <string name="direction_bounce">왕복</string>
+    <string name="bounce_description">아래로 한동안 내려갔다가 위로 한동안 올라오기를 되풀이합니다. 아래 구간을 위 구간보다 길게 두면 조금씩 내려가면서도 계속 오르내립니다.</string>
+    <string name="label_down_seconds">아래로 가는 구간</string>
+    <string name="label_up_seconds">위로 가는 구간</string>
+    <string name="value_leg">%d초</string>
+    <string name="value_cycle">한 바퀴 %1$d초 — 전체 시간 동안 약 %2$d번 왕복합니다.</string>
+    <string name="value_cycle_partial">한 바퀴 %d초 — 전체 시간이 한 바퀴보다 짧아 도중에 멈춥니다.</string>
+    <string name="value_cycle_unlimited">한 바퀴 %d초 — 직접 멈출 때까지 되풀이합니다.</string>
+    <string name="direction_state_bounce_down">왕복 중, 지금은 아래로</string>
+    <string name="direction_state_bounce_up">왕복 중, 지금은 위로</string>
+    <string name="overlay_direction_description">지금 스크롤 방향</string>
 </resources>

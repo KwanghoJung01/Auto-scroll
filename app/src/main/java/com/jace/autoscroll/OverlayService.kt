@@ -19,6 +19,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.app.NotificationCompat
 import androidx.core.app.ServiceCompat
@@ -35,8 +36,8 @@ class OverlayService : Service() {
         const val ACTION_STOP = "com.jace.autoscroll.STOP"
         /** 조작 바를 띄우면서 곧바로 자동 스크롤을 시작한다. */
         const val ACTION_START_SCROLL = "com.jace.autoscroll.START_SCROLL"
-        /** 설정 화면에서 가로줄 설정을 바꿨을 때 다시 그리게 한다. */
-        const val ACTION_REFRESH_GUIDES = "com.jace.autoscroll.REFRESH_GUIDES"
+        /** 설정 화면에서 값을 바꿨을 때 조작 바와 가로줄을 다시 그리게 한다. */
+        const val ACTION_REFRESH = "com.jace.autoscroll.REFRESH"
 
         private const val CHANNEL_ID = "auto_scroll_overlay"
         private const val NOTIFICATION_ID = 1001
@@ -53,10 +54,10 @@ class OverlayService : Service() {
             context.startForegroundService(intent)
         }
 
-        fun refreshGuides(context: Context) {
+        fun refresh(context: Context) {
             if (!isRunning) return
             context.startForegroundService(
-                Intent(context, OverlayService::class.java).setAction(ACTION_REFRESH_GUIDES)
+                Intent(context, OverlayService::class.java).setAction(ACTION_REFRESH)
             )
         }
 
@@ -74,6 +75,7 @@ class OverlayService : Service() {
     private var statusText: TextView? = null
     private var toggleButton: ImageButton? = null
     private var guideButton: ImageButton? = null
+    private var directionIcon: ImageView? = null
     private var guides: GuideLineOverlay? = null
 
     private val listener: (ScrollStatus) -> Unit = { render(it) }
@@ -97,7 +99,10 @@ class OverlayService : Service() {
                 return START_NOT_STICKY
             }
             ACTION_START_SCROLL -> ScrollController.start(this)
-            ACTION_REFRESH_GUIDES -> renderGuides()
+            ACTION_REFRESH -> {
+                renderGuides()
+                render(ScrollController.status())
+            }
         }
         return START_STICKY
     }
@@ -172,6 +177,7 @@ class OverlayService : Service() {
         val view = LayoutInflater.from(this).inflate(R.layout.overlay_control, null)
         statusText = view.findViewById(R.id.overlay_status)
         toggleButton = view.findViewById(R.id.overlay_toggle)
+        directionIcon = view.findViewById(R.id.overlay_direction)
 
         params = WindowManager.LayoutParams(
             WindowManager.LayoutParams.WRAP_CONTENT,
@@ -289,11 +295,41 @@ class OverlayService : Service() {
                 }
         }
         statusText?.text = label
+        renderDirection(status)
         toggleButton?.setImageResource(
             if (status.isActive) R.drawable.ic_stop else R.drawable.ic_play
         )
         toggleButton?.contentDescription = getString(
             if (status.isActive) R.string.action_stop else R.string.action_start
+        )
+    }
+
+    /** 지금 어느 쪽으로 가고 있는지, 왕복인지를 화살표 하나로 보여준다. */
+    private fun renderDirection(status: ScrollStatus) {
+        val running = status.phase == ScrollStatus.Phase.RUNNING
+        // 멈춰 있을 때는 아직 시작하지 않은 설정값을 보여준다.
+        val config = if (running) null else Prefs.load(this)
+        val bounce = config?.isBounce ?: status.bounce
+        val goingUp = if (config != null) {
+            config.direction == ScrollDirection.UP
+        } else {
+            status.leg == ScrollDirection.UP
+        }
+        val icon = when {
+            bounce && goingUp -> R.drawable.ic_dir_bounce_up
+            bounce -> R.drawable.ic_dir_bounce_down
+            goingUp -> R.drawable.ic_dir_up
+            else -> R.drawable.ic_dir_down
+        }
+        directionIcon?.setImageResource(icon)
+        directionIcon?.alpha = if (running) 1f else 0.45f
+        directionIcon?.contentDescription = getString(
+            when {
+                bounce && goingUp -> R.string.direction_state_bounce_up
+                bounce -> R.string.direction_state_bounce_down
+                goingUp -> R.string.direction_up
+                else -> R.string.direction_down
+            }
         )
     }
 

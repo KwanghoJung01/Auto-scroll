@@ -12,6 +12,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.core.content.FileProvider
 import com.jace.autoscroll.databinding.ActivityMainBinding
 import java.io.File
@@ -78,8 +79,14 @@ class MainActivity : AppCompatActivity() {
 
     private fun bindSettings(config: ScrollConfig) = with(binding) {
         directionToggle.check(
-            if (config.direction == ScrollDirection.UP) R.id.directionUp else R.id.directionDown
+            when (config.direction) {
+                ScrollDirection.UP -> R.id.directionUp
+                ScrollDirection.BOUNCE -> R.id.directionBounce
+                else -> R.id.directionDown
+            }
         )
+        downSlider.value = config.downSeconds.toFloat()
+        upSlider.value = config.upSeconds.toFloat()
         guideToggle.check(
             when (config.guideLineCount) {
                 1 -> R.id.guideOne
@@ -100,10 +107,10 @@ class MainActivity : AppCompatActivity() {
         // 가로줄 위치는 조작 바에서 끌어 옮기며 바뀌므로 저장된 값을 그대로 물려준다.
         val saved = Prefs.load(this@MainActivity)
         ScrollConfig(
-            direction = if (directionToggle.checkedButtonId == R.id.directionUp) {
-                ScrollDirection.UP
-            } else {
-                ScrollDirection.DOWN
+            direction = when (directionToggle.checkedButtonId) {
+                R.id.directionUp -> ScrollDirection.UP
+                R.id.directionBounce -> ScrollDirection.BOUNCE
+                else -> ScrollDirection.DOWN
             },
             swipeDurationMs = speedSlider.value.toInt(),
             distancePercent = distanceSlider.value.toInt(),
@@ -111,6 +118,8 @@ class MainActivity : AppCompatActivity() {
             totalSeconds = totalSlider.value.toInt(),
             startDelaySec = delaySlider.value.toInt(),
             randomize = randomSwitch.isChecked,
+            downSeconds = downSlider.value.toInt(),
+            upSeconds = upSlider.value.toInt(),
             guideLineCount = when (guideToggle.checkedButtonId) {
                 R.id.guideOne -> 1
                 R.id.guideTwo -> 2
@@ -129,14 +138,19 @@ class MainActivity : AppCompatActivity() {
         intervalSlider.addOnChangeListener { _, _, _ -> onChange(Unit) }
         totalSlider.addOnChangeListener { _, _, _ -> onChange(Unit) }
         delaySlider.addOnChangeListener { _, _, _ -> onChange(Unit) }
+        downSlider.addOnChangeListener { _, _, _ -> onChange(Unit) }
+        upSlider.addOnChangeListener { _, _, _ -> onChange(Unit) }
         randomSwitch.setOnCheckedChangeListener { _, _ -> onChange(Unit) }
         directionToggle.addOnButtonCheckedListener { _, _, isChecked ->
-            if (isChecked) onChange(Unit)
+            if (isChecked) {
+                onChange(Unit)
+                OverlayService.refresh(this@MainActivity)
+            }
         }
         guideToggle.addOnButtonCheckedListener { _, _, isChecked ->
             if (isChecked) {
                 onChange(Unit)
-                OverlayService.refreshGuides(this@MainActivity)
+                OverlayService.refresh(this@MainActivity)
             }
         }
     }
@@ -160,6 +174,22 @@ class MainActivity : AppCompatActivity() {
         guideHint.setText(
             if (config.guideLineCount > 0) R.string.guide_hint_on else R.string.guide_hint_off
         )
+
+        bounceGroup.isVisible = config.isBounce
+        downValue.text = getString(R.string.value_leg, config.downSeconds)
+        upValue.text = getString(R.string.value_leg, config.upSeconds)
+        cycleHint.text = describeCycle(config)
+    }
+
+    /** "한 바퀴 60초 — 5분 동안 5번 왕복" 처럼, 설정이 실제로 어떻게 도는지 보여준다. */
+    private fun describeCycle(config: ScrollConfig): String {
+        val cycle = config.cycleSeconds
+        val count = config.cycleCount()
+        return when {
+            count == null -> getString(R.string.value_cycle_unlimited, cycle)
+            count < 1 -> getString(R.string.value_cycle_partial, cycle)
+            else -> getString(R.string.value_cycle, cycle, count)
+        }
     }
 
     /** 조작 바에서 줄을 켜고 껐을 수 있으므로 돌아올 때 화면을 맞춰준다. */

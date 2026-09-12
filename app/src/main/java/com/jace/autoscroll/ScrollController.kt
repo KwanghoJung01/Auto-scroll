@@ -17,6 +17,12 @@ data class ScrollStatus(
     val countdownLeft: Int,
     /** 지금까지 수행한 스와이프 횟수. */
     val swipes: Int,
+    /** 왕복 설정인지. 조작 바 아이콘을 고르는 데 쓴다. */
+    val bounce: Boolean = false,
+    /** 지금 실제로 향하고 있는 쪽. 왕복이면 구간마다 뒤집힌다. */
+    val leg: ScrollDirection = ScrollDirection.DOWN,
+    /** 이번 구간이 끝나기까지 남은 초. 왕복이 아니면 -1. */
+    val legSecondsLeft: Int = -1,
 ) {
     enum class Phase { IDLE, COUNTDOWN, RUNNING }
 
@@ -46,6 +52,11 @@ object ScrollController {
     private var swipes = 0
     private var config = ScrollConfig()
 
+    /** 왕복일 때 지금 향하고 있는 쪽. */
+    private var leg = ScrollDirection.DOWN
+    /** 이번 구간이 끝나는 시각. 왕복이 아니면 0. */
+    private var legEndsAt = 0L
+
     val isActive: Boolean get() = phase != ScrollStatus.Phase.IDLE
 
     fun addListener(listener: (ScrollStatus) -> Unit) {
@@ -63,7 +74,12 @@ object ScrollController {
             else -> ((endAtElapsed - SystemClock.elapsedRealtime()) / 1000L)
                 .coerceAtLeast(0L).toInt()
         }
-        return ScrollStatus(phase, left, countdownLeft, swipes)
+        val legLeft = when {
+            phase != ScrollStatus.Phase.RUNNING || legEndsAt == 0L -> -1
+            else -> ((legEndsAt - SystemClock.elapsedRealtime()) / 1000L)
+                .coerceAtLeast(0L).toInt()
+        }
+        return ScrollStatus(phase, left, countdownLeft, swipes, config.isBounce, leg, legLeft)
     }
 
     /** 설정을 읽어 카운트다운부터 시작한다. 접근성 서비스가 꺼져 있으면 false. */
@@ -74,6 +90,8 @@ object ScrollController {
         config = Prefs.load(context)
         swipes = 0
         endAtElapsed = 0L
+        leg = config.firstLeg()
+        legEndsAt = 0L
         countdownLeft = config.startDelaySec
 
         if (countdownLeft > 0) {
@@ -91,6 +109,7 @@ object ScrollController {
         phase = ScrollStatus.Phase.IDLE
         countdownLeft = 0
         endAtElapsed = 0L
+        legEndsAt = 0L
         notifyListeners()
     }
 
@@ -117,11 +136,10 @@ object ScrollController {
     private fun beginRunning() {
         phase = ScrollStatus.Phase.RUNNING
         countdownLeft = 0
-        endAtElapsed = if (config.isUnlimited) {
-            0L
-        } else {
-            SystemClock.elapsedRealtime() + config.totalSeconds * 1000L
-        }
+        val now = SystemClock.elapsedRealtime()
+        endAtElapsed = if (config.isUnlimited) 0L else now + config.totalSeconds * 1000L
+        leg = config.firstLeg()
+        legEndsAt = if (config.isBounce) now + config.legSeconds(leg) * 1000L else 0L
         notifyListeners()
         handler.post(swipeLoop)
         handler.postDelayed(clockTick, 1000L)
@@ -135,6 +153,7 @@ object ScrollController {
                 stop()
                 return
             }
+            advanceLegIfDue()
             notifyListeners()
             handler.postDelayed(this, 1000L)
         }
@@ -155,9 +174,11 @@ object ScrollController {
                 return
             }
 
+            advanceLegIfDue()
+
             val duration = jitter(config.swipeDurationMs).coerceAtLeast(50)
             val distance = jitter(config.distancePercent).coerceIn(5, 95)
-            target.swipe(config.direction, distance, duration)
+            target.swipe(leg, distance, duration)
 
             swipes += 1
             notifyListeners()
@@ -165,6 +186,15 @@ object ScrollController {
             val gap = jitter(config.intervalMs).coerceAtLeast(0)
             handler.postDelayed(this, (duration + gap).toLong())
         }
+    }
+
+    /** 왕복일 때, 이번 구간의 시간이 다 되었으면 방향을 뒤집는다. */
+    private fun advanceLegIfDue() {
+        if (!config.isBounce || legEndsAt == 0L) return
+        val now = SystemClock.elapsedRealtime()
+        if (now < legEndsAt) return
+        leg = config.nextLeg(leg)
+        legEndsAt = now + config.legSeconds(leg).coerceAtLeast(1) * 1000L
     }
 
     /** [randomize] 가 켜져 있으면 값을 ±20% 흔들어 기계적인 반복을 줄인다. */

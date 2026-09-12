@@ -2,8 +2,13 @@ package com.jace.autoscroll
 
 import android.content.Context
 
-/** 스크롤 방향. [DOWN] 은 손가락을 위로 쓸어 화면을 아래로 넘기는 동작이다. */
-enum class ScrollDirection { DOWN, UP }
+/**
+ * 스크롤 방향.
+ *
+ * [DOWN] 은 손가락을 위로 쓸어 화면을 아래로 넘기는 동작이고,
+ * [BOUNCE] 는 아래로 한동안 내려갔다가 위로 한동안 올라오기를 되풀이한다.
+ */
+enum class ScrollDirection { DOWN, UP, BOUNCE }
 
 /**
  * 자동 스크롤 동작을 결정하는 값들.
@@ -14,6 +19,8 @@ enum class ScrollDirection { DOWN, UP }
  * @param totalSeconds 전체 실행 시간(초). 0 이면 무제한.
  * @param startDelaySec 시작 버튼을 누른 뒤 첫 동작까지의 준비 시간.
  * @param randomize 사람 손처럼 보이도록 거리/시간을 매번 ±20% 흔들지 여부.
+ * @param downSeconds 왕복일 때 아래로 내려가는 한 구간의 길이(초).
+ * @param upSeconds 왕복일 때 위로 올라오는 한 구간의 길이(초).
  */
 data class ScrollConfig(
     val direction: ScrollDirection = ScrollDirection.DOWN,
@@ -23,12 +30,35 @@ data class ScrollConfig(
     val totalSeconds: Int = 60,
     val startDelaySec: Int = 5,
     val randomize: Boolean = true,
+    val downSeconds: Int = 40,
+    val upSeconds: Int = 20,
     val guideLineCount: Int = 0,
     val guidesVisible: Boolean = true,
     val guide1Percent: Int = 40,
     val guide2Percent: Int = 60,
 ) {
     val isUnlimited: Boolean get() = totalSeconds <= 0
+
+    val isBounce: Boolean get() = direction == ScrollDirection.BOUNCE
+
+    /** 왕복 한 바퀴에 걸리는 시간(초). */
+    val cycleSeconds: Int get() = downSeconds + upSeconds
+
+    /** 전체 시간 안에 왕복을 몇 번 도는지. 무제한이면 null. */
+    fun cycleCount(): Int? =
+        if (isUnlimited || cycleSeconds <= 0) null else totalSeconds / cycleSeconds
+
+    /** 한 구간이 끝났을 때 다음 구간의 방향. */
+    fun nextLeg(current: ScrollDirection): ScrollDirection =
+        if (current == ScrollDirection.DOWN) ScrollDirection.UP else ScrollDirection.DOWN
+
+    /** 해당 구간이 몇 초짜리인지. */
+    fun legSeconds(leg: ScrollDirection): Int =
+        if (leg == ScrollDirection.UP) upSeconds else downSeconds
+
+    /** 왕복이 아닐 때는 방향이 곧 구간이다. */
+    fun firstLeg(): ScrollDirection =
+        if (isBounce) ScrollDirection.DOWN else direction
 
     /** 화면에 실제로 그릴 가로줄들의 위치(화면 높이 대비 %). */
     fun visibleGuides(): List<Int> = when {
@@ -49,6 +79,8 @@ object Prefs {
     private const val KEY_TOTAL = "total_seconds"
     private const val KEY_DELAY = "start_delay"
     private const val KEY_RANDOM = "randomize"
+    private const val KEY_DOWN_SECONDS = "down_seconds"
+    private const val KEY_UP_SECONDS = "up_seconds"
     private const val KEY_GUIDE_COUNT = "guide_count"
     private const val KEY_GUIDES_VISIBLE = "guides_visible"
     private const val KEY_GUIDE1 = "guide1_percent"
@@ -58,17 +90,17 @@ object Prefs {
         val p = context.getSharedPreferences(NAME, Context.MODE_PRIVATE)
         val d = ScrollConfig()
         return ScrollConfig(
-            direction = if (p.getString(KEY_DIRECTION, d.direction.name) == ScrollDirection.UP.name) {
-                ScrollDirection.UP
-            } else {
-                ScrollDirection.DOWN
-            },
+            direction = runCatching {
+                ScrollDirection.valueOf(p.getString(KEY_DIRECTION, d.direction.name).orEmpty())
+            }.getOrDefault(d.direction),
             swipeDurationMs = p.getInt(KEY_DURATION, d.swipeDurationMs),
             distancePercent = p.getInt(KEY_DISTANCE, d.distancePercent),
             intervalMs = p.getInt(KEY_INTERVAL, d.intervalMs),
             totalSeconds = p.getInt(KEY_TOTAL, d.totalSeconds),
             startDelaySec = p.getInt(KEY_DELAY, d.startDelaySec),
             randomize = p.getBoolean(KEY_RANDOM, d.randomize),
+            downSeconds = p.getInt(KEY_DOWN_SECONDS, d.downSeconds),
+            upSeconds = p.getInt(KEY_UP_SECONDS, d.upSeconds),
             guideLineCount = p.getInt(KEY_GUIDE_COUNT, d.guideLineCount),
             guidesVisible = p.getBoolean(KEY_GUIDES_VISIBLE, d.guidesVisible),
             guide1Percent = p.getInt(KEY_GUIDE1, d.guide1Percent),
@@ -85,6 +117,8 @@ object Prefs {
             .putInt(KEY_TOTAL, config.totalSeconds)
             .putInt(KEY_DELAY, config.startDelaySec)
             .putBoolean(KEY_RANDOM, config.randomize)
+            .putInt(KEY_DOWN_SECONDS, config.downSeconds)
+            .putInt(KEY_UP_SECONDS, config.upSeconds)
             .putInt(KEY_GUIDE_COUNT, config.guideLineCount)
             .putBoolean(KEY_GUIDES_VISIBLE, config.guidesVisible)
             .putInt(KEY_GUIDE1, config.guide1Percent)
