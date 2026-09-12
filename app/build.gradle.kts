@@ -11,16 +11,30 @@ android {
         applicationId = "com.jace.autoscroll"
         minSdk = 26
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0"
+        // CI 에서 빌드 번호를 넘겨준다. 없으면 로컬 빌드로 본다.
+        versionCode = (System.getenv("VERSION_CODE") ?: "1").toInt()
+        versionName = System.getenv("VERSION_NAME") ?: "1.0-local"
+    }
+
+    signingConfigs {
+        // 저장소에 함께 넣어둔 고정 키. 이게 없으면 빌드마다 임시 debug 키가
+        // 새로 만들어져서, 이미 깔린 앱 위에 덮어 설치가 되지 않는다.
+        create("shared") {
+            storeFile = rootProject.file("keystore/autoscroll.jks")
+            storePassword = "autoscroll"
+            keyAlias = "autoscroll"
+            keyPassword = "autoscroll"
+        }
     }
 
     buildTypes {
+        debug {
+            signingConfig = signingConfigs.getByName("shared")
+        }
         release {
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-            // 서명 키가 없어도 누구나 빌드/설치할 수 있도록 debug 키로 서명한다.
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("shared")
         }
     }
 

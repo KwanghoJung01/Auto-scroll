@@ -62,8 +62,24 @@ Android Studio 로 열고 실행하거나, 터미널에서:
 # 결과물: app/build/outputs/apk/release/app-release.apk
 ```
 
-> 별도의 서명 키 없이도 바로 설치할 수 있도록 release 빌드도 디버그 키로 서명합니다.
-> Play 스토어에 올릴 때에는 `app/build.gradle.kts` 에 본인의 서명 키를 넣어 주세요.
+### 서명 키에 대하여
+
+`keystore/autoscroll.jks` 를 저장소에 함께 넣어두고, debug·release 빌드 모두 이 키로 서명합니다.
+빌드할 때마다 임시 키가 새로 만들어지면 **이미 깔린 앱 위에 덮어 설치가 되지 않기** 때문입니다.
+
+이 키는 공개돼 있으므로 "이 앱을 만든 사람이 누구인지" 증명해주지 못합니다.
+누구나 이 키로 서명한 APK를 만들어 업데이트인 것처럼 설치시킬 수 있습니다.
+개인이 APK로 나눠 쓰는 용도라면 감수할 만한 맞바꿈이지만,
+Play 스토어에 올리거나 넓게 배포한다면 본인 키로 바꾸세요.
+
+```bash
+keytool -genkeypair -v -keystore my.jks -storetype PKCS12 \
+  -alias mykey -keyalg RSA -keysize 2048 -validity 10950
+```
+
+`app/build.gradle.kts` 의 `signingConfigs { create("shared") { ... } }` 에서 파일과 비밀번호를
+바꾸거나, GitHub Secrets 에 넣어 CI 에서 내려받도록 바꾸면 됩니다.
+키를 바꾸면 기존 사용자는 앱을 한 번 지우고 다시 설치해야 합니다.
 
 ---
 

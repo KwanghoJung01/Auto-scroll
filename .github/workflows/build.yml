@@ -30,6 +30,10 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
 
       - name: Build debug and release APKs
+        env:
+          # 빌드마다 버전을 올려, 폰에서 업데이트가 반영됐는지 바로 알 수 있게 한다.
+          VERSION_CODE: ${{ github.run_number }}
+          VERSION_NAME: 1.${{ github.run_number }}
         run: ./gradlew assembleDebug assembleRelease --stacktrace
 
       - name: Rename APKs
@@ -83,6 +87,6 @@ jobs:
             설치할 때 "출처를 알 수 없는 앱" 허용이 필요하고,
             설치 후 앱에서 접근성 서비스와 '다른 앱 위에 표시' 권한을 켜주세요.
 
-            커밋: ${{ github.sha }}
+            버전: 1.${{ github.run_number }} · 커밋 ${{ github.sha }}
           files: out/*.apk
           make_latest: true

@@ -26,6 +26,14 @@
             android:text="@string/app_tagline"
             android:textAppearance="?attr/textAppearanceBodyMedium" />
 
+        <TextView
+            android:id="@+id/versionLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:alpha="0.6"
+            android:textAppearance="?attr/textAppearanceLabelSmall" />
+
         <!-- 시작 버튼은 바로 누를 수 있도록 맨 위에 둔다. -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/startButton"

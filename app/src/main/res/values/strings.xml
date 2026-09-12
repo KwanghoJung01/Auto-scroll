@@ -84,4 +84,5 @@
     <string name="direction_state_bounce_down">왕복 중, 지금은 아래로</string>
     <string name="direction_state_bounce_up">왕복 중, 지금은 위로</string>
     <string name="overlay_direction_description">지금 스크롤 방향</string>
+    <string name="version_label">버전 %s</string>
 </resources>

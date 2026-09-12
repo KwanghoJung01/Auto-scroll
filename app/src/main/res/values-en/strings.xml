@@ -84,4 +84,5 @@
     <string name="direction_state_bounce_down">Going back and forth, currently down</string>
     <string name="direction_state_bounce_up">Going back and forth, currently up</string>
     <string name="overlay_direction_description">Current scroll direction</string>
+    <string name="version_label">Version %s</string>
 </resources>

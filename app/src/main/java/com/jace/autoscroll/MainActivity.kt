@@ -37,6 +37,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        binding.versionLabel.text = getString(R.string.version_label, BuildConfig.VERSION_NAME)
         bindSettings(Prefs.load(this))
         wireSliders()
 
